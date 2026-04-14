@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="pl" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plan Treningowy</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body class="h-full bg-slate-50 text-slate-900">
+  <div id="app" class="min-h-full">
+    <nav class="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur-xl">
+      <div class="mx-auto max-w-2xl px-4">
+        <div class="relative flex items-stretch">
+          <div id="tabIndicator" class="tab-indicator"></div>
+
+          <button type="button" id="plansTab" data-tab="plans" class="nav-tab active">
+            <i class="fas fa-dumbbell"></i>
+            <span>Plany</span>
+          </button>
+
+          <button type="button" id="calendarTab" data-tab="calendar" class="nav-tab">
+            <i class="fas fa-calendar-check"></i>
+            <span>Kalendarz</span>
+          </button>
+
+          <button type="button" id="settingsTab" data-tab="settings" class="nav-tab">
+            <i class="fas fa-sliders"></i>
+            <span>Ustawienia</span>
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <main class="mx-auto max-w-2xl px-4 pb-28 pt-7">
+      <section id="plansView" class="tab-view">
+        <header class="mb-8">
+          <p class="mb-3 inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">
+            <i class="fas fa-bolt"></i>
+            Prosty plan treningowy
+          </p>
+          <h1 class="mb-2 text-3xl font-extrabold tracking-tight text-slate-900">Moje Treningi</h1>
+          <p class="text-slate-500">Sama aplikacja, bez logowania i bez bazy danych. Wszystko zapisuje się lokalnie w tej przeglądarce.</p>
+        </header>
+
+        <div id="plansList" class="space-y-4"></div>
+
+        <button type="button" id="addPlanBtn" class="primary-button mt-6 w-full">
+          <i class="fas fa-plus"></i>
+          <span>Dodaj trening</span>
+        </button>
+      </section>
+
+      <section id="calendarView" class="tab-view hidden">
+        <header class="mb-8">
+          <h1 class="mb-2 text-3xl font-extrabold tracking-tight text-slate-900">Kalendarz</h1>
+          <p class="text-slate-500">W dniu treningu zobaczysz kolor i ikonę wykonanego planu.</p>
+        </header>
+        <div id="calendarContent"></div>
+      </section>
+
+      <section id="settingsView" class="tab-view hidden">
+        <header class="mb-8">
+          <h1 class="mb-2 text-3xl font-extrabold tracking-tight text-slate-900">Ustawienia</h1>
+          <p class="text-slate-500">Prosta aplikacja lokalna bez konta. Możesz wyczyścić swoje dane jednym kliknięciem.</p>
+        </header>
+        <div id="settingsContent"></div>
+      </section>
+    </main>
+
+    <div id="createPlanModal" class="modal hidden">
+      <div class="modal-panel modal-small">
+        <div class="modal-header">
+          <div>
+            <h2 class="text-xl font-bold text-slate-900">Nowy trening</h2>
+            <p class="text-sm text-slate-500">Tytuł jest wpisany od razu. Możesz go zmienić przed utworzeniem.</p>
+          </div>
+          <button type="button" id="closeCreatePlanModal" class="icon-button" aria-label="Zamknij okno">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <label for="quickPlanName" class="form-label">Tytuł treningu</label>
+          <input id="quickPlanName" type="text" class="input-field" placeholder="np. Trening 1">
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" id="cancelCreatePlanBtn" class="ghost-button">Anuluj</button>
+          <button type="button" id="confirmCreatePlanBtn" class="primary-button">
+            <i class="fas fa-plus"></i>
+            <span>Utwórz</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="addPlanModal" class="modal hidden">
+      <div class="modal-panel modal-large">
+        <div class="modal-header">
+          <div>
+            <h2 id="editPlanTitle" class="text-xl font-bold text-slate-900">Edytuj trening</h2>
+            <p id="editPlanSubtitle" class="text-sm text-slate-500">Dodawaj ćwiczenia, zmieniaj kolory i układ planu.</p>
+          </div>
+          <button type="button" id="closeAddPlanModal" class="icon-button" aria-label="Zamknij okno">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div class="space-y-6">
+            <div>
+              <label for="planName" class="form-label">Nazwa planu</label>
+              <input id="planName" type="text" class="input-field" placeholder="np. Full Body">
+            </div>
+
+            <div>
+              <label class="form-label">Kolor planu</label>
+              <div id="planColorOptions" class="grid grid-cols-4 gap-3 sm:grid-cols-8"></div>
+            </div>
+
+            <div>
+              <label class="form-label">Ikona planu</label>
+              <div id="planIconOptions" class="grid grid-cols-4 gap-3 sm:grid-cols-6"></div>
+            </div>
+
+            <div>
+              <div class="mb-4 flex items-center justify-between gap-4">
+                <div>
+                  <h3 class="text-sm font-bold uppercase tracking-[0.18em] text-slate-500">Ćwiczenia</h3>
+                  <p class="text-sm text-slate-500">Każde ćwiczenie możesz ustawić na czas albo powtórzenia.</p>
+                </div>
+                <button type="button" id="addExerciseBtn" class="secondary-button">
+                  <i class="fas fa-plus"></i>
+                  <span>Dodaj</span>
+                </button>
+              </div>
+
+              <div id="exercisesList" class="space-y-4"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" id="cancelAddPlanBtn" class="ghost-button">Anuluj</button>
+          <button type="button" id="savePlanBtn" class="primary-button">
+            <i class="fas fa-floppy-disk"></i>
+            <span>Zapisz zmiany</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="workoutView" class="hidden fixed inset-0 z-40 bg-white/95 backdrop-blur-sm">
+      <div class="mx-auto flex h-full max-w-2xl flex-col">
+        <div class="flex items-center justify-between border-b border-slate-200 bg-white px-4 py-4">
+          <button type="button" id="exitWorkoutBtn" class="icon-button" aria-label="Zamknij trening">
+            <i class="fas fa-arrow-left"></i>
+          </button>
+          <h2 id="workoutPlanName" class="text-lg font-bold text-slate-900"></h2>
+          <div class="w-10"></div>
+        </div>
+        <div id="workoutContent" class="flex-1 overflow-y-auto px-4 py-6"></div>
+      </div>
+    </div>
+
+    <div id="dailyWelcomeModal" class="modal hidden welcome-overlay">
+      <div class="modal-panel modal-small welcome-panel">
+        <div id="dailyWelcomeContent"></div>
+      </div>
+    </div>
+
+    <div id="toastContainer" class="pointer-events-none fixed inset-x-0 top-20 z-50 flex justify-center px-4"></div>
+  </div>
+
+  <script src="./script.js" defer></script>
+</body>
+</html>
